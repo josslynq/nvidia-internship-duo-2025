@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Georgia Tech x NVIDIA | Dynamic Duo Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .gpu-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, rgba(118, 185, 0, 0.1) 0%, rgba(255, 184, 28, 0.1) 100%);
+            border-radius: 20px;
+            margin-bottom: 60px;
+            border: 2px solid rgba(118, 185, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 184, 28, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #76b900 0%, #ffb81c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #cccccc;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tagline {
+            font-size: 1.1em;
+            color: #76b900;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .mission-statement {
+            background: rgba(118, 185, 0, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 60px;
+            border-left: 5px solid #76b900;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .mission-statement h2 {
+            color: #ffb81c;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .mission-statement p {
+            line-height: 1.8;
+            font-size: 1.1em;
+            color: #e0e0e0;
+        }
+
+        .duo-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .team-member {
+            background: linear-gradient(135deg, rgba(30, 30, 30, 0.9) 0%, rgba(40, 40, 40, 0.9) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(118, 185, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+            border-color: #ffb81c;
+            box-shadow: 0 20px 40px rgba(255, 184, 28, 0.3);
+        }
+
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #76b900 0%, #ffb81c 100%);
+        }
+
+        .image-placeholder {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #76b900 0%, #ffb81c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-placeholder::after {
+            content: 'Upload Photo';
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.3em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .team-member h3 {
+            color: #ffb81c;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .role {
+            color: #76b900;
+            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .bio-section {
+            margin-bottom: 25px;
+        }
+
+        .bio-section h4 {
+            color: #ffb81c;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            border-bottom: 2px solid rgba(118, 185, 0, 0.3);
+            padding-bottom: 5px;
+        }
+
+        .bio-section p, .bio-section ul {
+            color: #d0d0d0;
+            line-height: 1.7;
+            font-size: 1.05em;
+        }
+
+        .bio-section ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .bio-section li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .bio-section li::before {
+            content: '▸';
+            color: #76b900;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .tech-badge {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76b900;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: 1px solid rgba(118, 185, 0, 0.4);
+        }
+
+        .why-nvidia {
+            background: linear-gradient(135deg, rgba(255, 184, 28, 0.1) 0%, rgba(118, 185, 0, 0.1) 100%);
+            padding: 50px;
+            border-radius: 20px;
+            margin-bottom: 60px;
+            border: 2px solid rgba(255, 184, 28, 0.3);
+        }
+
+        .why-nvidia h2 {
+            color: #ffb81c;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .enthusiasm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .enthusiasm-card {
+            background: rgba(30, 30, 30, 0.6);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #76b900;
+        }
+
+        .enthusiasm-card h3 {
+            color: #ffb81c;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .enthusiasm-card p {
+            color: #d0d0d0;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 15px;
+            border: 1px solid rgba(118, 185, 0, 0.2);
+        }
+
+        footer p {
+            color: #999999;
+            font-size: 1.1em;
+        }
+
+        .nvidia-green { color: #76b900; }
+        .gt-gold { color: #ffb81c; }
+
+        .accent-line {
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #76b900 0%, #ffb81c 100%);
+            margin: 20px auto;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            .duo-container { grid-template-columns: 1fr; }
+            .enthusiasm-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="gpu-grid"></div>
+<div class="container">
+    <header>
+        <h1>⚡ Georgia Tech x NVIDIA ⚡</h1>
+        <div class="accent-line"></div>
+        <p class="subtitle">Enterprise Product Group Internship Application</p>
+        <p class="tagline">Two Yellow Jackets, One Mission: Accelerating AI Innovation</p>
+    </header>
+
+    <section class="mission-statement">
+        <h2>🚀 Our Duo Mission</h2>
+        <p>
+            We're a dynamic duo from Georgia Tech, united by our passion for AI infrastructure and product development.
+            Inspired by NVIDIA's call for collaborative partnerships, we've combined our complementary skills in
+            <span class="nvidia-green">distributed systems, AI tooling, and product strategy</span> to bring fresh perspectives
+            to the Enterprise Product Group. Together, we're ready to <span class="gt-gold">default to action</span>,
+            drive OSS contributions, and help shape the future of DGX systems and enterprise AI platforms.
+        </p>
+    </section>
+
+    <div class="duo-container">
+        <!-- Team Member 1 -->
+        <div class="team-member">
+            <div class="image-placeholder">👤</div>
+            <h3>[Your Name Here]</h3>
+            <p class="role">GPU Architect & Backend Specialist</p>
+
+            <div class="bio-section">
+                <h4>About Me</h4>
+                <p>
+                    [Write a compelling 2-3 sentence introduction about yourself, your passion for AI/ML,
+                    and what drives you to work on cutting-edge GPU-accelerated technologies.]
+                </p>
+            </div>
+
+            <div class="bio-section">
+                <h4>Technical Experience</h4>
+                <ul>
+                    <li>[Project 1: Describe a key AI/ML or distributed systems project]</li>
+                    <li>[Project 2: Highlight cloud infrastructure or backend work]</li>
+                    <li>[Project 3: Showcase any Gen AI applications or OSS contributions]</li>
+                </ul>
+            </div>
+
+            <div class="bio-section">
+                <h4>Tech Stack</h4>
+                <div class="tech-stack">
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">CUDA</span>
+                    <span class="tech-badge">PyTorch</span>
+                    <span class="tech-badge">AWS</span>
+                    <span class="tech-badge">Git</span>
+                    <span class="tech-badge">Cursor AI</span>
+                </div>
+            </div>
+
+            <div class="bio-section">
+                <h4>Why NVIDIA?</h4>
+                <p>
+                    [Explain your specific enthusiasm for NVIDIA's enterprise products, DGX systems,
+                    and how you see yourself contributing to the team.]
+                </p>
+            </div>
+        </div>
+
+        <!-- Team Member 2 -->
+        <div class="team-member">
+            <div class="image-placeholder">👤</div>
+            <h3>[Partner's Name Here]</h3>
+            <p class="role">Product Strategist & AI Integration Expert</p>
+
+            <div class="bio-section">
+                <h4>About Me</h4>
+                <p>
+                    [Write a compelling 2-3 sentence introduction about yourself, emphasizing product thinking,
+                    user research, or experience with AI-powered workflows.]
+                </p>
+            </div>
+
+            <div class="bio-section">
+                <h4>Technical Experience</h4>
+                <ul>
+                    <li>[Project 1: Describe product management or UX-related work]</li>
+                    <li>[Project 2: Highlight experience with AI model deployment or workflows]</li>
+                    <li>[Project 3: Showcase market research, documentation, or community building]</li>
+                </ul>
+            </div>
+
+            <div class="bio-section">
+                <h4>Tech Stack</h4>
+                <div class="tech-stack">
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">TensorFlow</span>
+                    <span class="tech-badge">GCP</span>
+                    <span class="tech-badge">Docker</span>
+                    <span class="tech-badge">Git</span>
+                    <span class="tech-badge">Claude Code</span>
+                </div>
+            </div>
+
+            <div class="bio-section">
+                <h4>Why NVIDIA?</h4>
+                <p>
+                    [Explain your specific interest in enterprise AI platforms, product lifecycle management,
+                    and how you envision bridging technical and business needs.]
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <section class="why-nvidia">
+        <h2>🎯 Why We're the Perfect Duo for NVIDIA</h2>
+        <div class="enthusiasm-grid">
+            <div class="enthusiasm-card">
+                <h3>💪 Complementary Skills</h3>
+                <p>
+                    Our partnership combines deep technical expertise in distributed systems and AI with
+                    strategic product thinking. We cover the full spectrum from writing code to fix product
+                    gaps to conducting market analysis and building community engagement.
+                </p>
+            </div>
+            <div class="enthusiasm-card">
+                <h3>🚀 Default to Action</h3>
+                <p>
+                    We don't just identify problems—we solve them. Both experienced with AI-assisted coding
+                    tools like Cursor and Claude Code, we're ready to prototype solutions, contribute to OSS,
+                    and demonstrate novel use cases of NVIDIA's Gen AI software libraries.
+                </p>
+            </div>
+            <div class="enthusiasm-card">
+                <h3>🌟 Genuine Excitement</h3>
+                <p>
+                    From following DGX SuperPOD deployments to experimenting with NVIDIA's AI frameworks,
+                    we're genuinely excited about the software we'll be building. We see this internship
+                    as an opportunity to learn from the team that transformed NVIDIA into a full-stack AI company.
+                </p>
+            </div>
+            <div class="enthusiasm-card">
+                <h3>🐝 Georgia Tech Innovation</h3>
+                <p>
+                    As Yellow Jackets, we bring the collaborative spirit and technical rigor of Georgia Tech.
+                    Our campus culture emphasizes hands-on building, cross-functional teamwork, and pushing
+                    the boundaries of what's possible with AI.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Built with 💚 by two Georgia Tech students ready to accelerate AI at NVIDIA</p>
+        <p class="nvidia-green">Contact: [your-emails@gatech.edu]</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">
+            🎨 Vibe-coded with AI-assisted tools | 🐙 View on <a href="#" style="color: #76b900;">GitHub</a>
+        </p>
+    </footer>
+</div>
+</body>
+</html>
