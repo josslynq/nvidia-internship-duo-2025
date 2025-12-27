@@ -19,6 +19,15 @@
             overflow-x: hidden;
             position: relative;
             perspective: 1000px;
+            cursor: none;
+        }
+
+        * {
+            cursor: none;
+        }
+
+        a, button {
+            cursor: none;
         }
 
         body::before {
@@ -78,16 +87,53 @@
             transition: transform 0.3s ease-out, opacity 0.3s ease-out;
         }
 
-        .progress-bar {
+        .progress-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 4px;
-            background: linear-gradient(90deg, #b8934f 0%, #d4a574 50%, #b8934f 100%);
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             z-index: 10000;
-            transition: width 0.1s ease;
-            box-shadow: 0 0 10px rgba(180, 140, 50, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar-vertical {
+            width: 4px;
+            height: 300px;
+            background: rgba(180, 140, 50, 0.2);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(180deg, #d4a574 0%, #b8934f 100%);
+            border-radius: 10px;
+            transition: height 0.1s ease;
+            box-shadow: 0 0 20px rgba(180, 140, 50, 0.6);
+        }
+
+        .progress-percentage-side {
+            color: #d4a574;
+            font-weight: 700;
+            font-size: 0.85em;
+            background: rgba(10, 22, 40, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 6px 12px;
+            border-radius: 15px;
+            border: 1px solid rgba(180, 140, 50, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar {
+            display: none;
         }
 
         header {
@@ -282,28 +328,30 @@
         }
 
         .custom-cursor {
-            position: fixed;
+            position: absolute;
             width: 20px;
             height: 20px;
             border: 2px solid #b8934f;
             border-radius: 50%;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 99999;
             transition: transform 0.15s ease;
             mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
         }
 
         .cursor-follower {
-            position: fixed;
+            position: absolute;
             width: 30px;
             height: 30px;
             pointer-events: none;
-            z-index: 9998;
+            z-index: 99998;
             font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            transform: translate(-50%, -50%);
         }
 
         .cursor-follower::before {
@@ -311,12 +359,12 @@
         }
 
         body:hover .custom-cursor {
-            transform: scale(1.5);
+            transform: translate(-50%, -50%) scale(1.5);
         }
 
         a:hover ~ .custom-cursor,
         button:hover ~ .custom-cursor {
-            transform: scale(2);
+            transform: translate(-50%, -50%) scale(2);
             border-color: #d4a574;
         }
 
@@ -648,6 +696,12 @@
 </head>
 <body>
 <div class="progress-bar"></div>
+<div class="progress-container">
+    <div class="progress-percentage-side">0%</div>
+    <div class="progress-bar-vertical">
+        <div class="progress-fill"></div>
+    </div>
+</div>
 <div class="custom-cursor"></div>
 <div class="cursor-follower"></div>
 <div class="container">
@@ -822,31 +876,44 @@
 </div>
 
 <script>
-    // Progress bar
-    const progressBar = document.querySelector('.progress-bar');
+    // Progress indicator
+    const progressFill = document.querySelector('.progress-fill');
+    const progressPercentage = document.querySelector('.progress-percentage-side');
 
     function updateProgressBar() {
         const scrollTop = window.scrollY;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
         const scrollPercent = (scrollTop / docHeight) * 100;
-        progressBar.style.width = scrollPercent + '%';
+
+        // Update fill height
+        progressFill.style.height = scrollPercent + '%';
+
+        // Update percentage text
+        progressPercentage.textContent = Math.round(scrollPercent) + '%';
     }
 
     window.addEventListener('scroll', updateProgressBar);
+    window.addEventListener('resize', updateProgressBar);
     updateProgressBar(); // Initial call
 
     // Custom cursor
     const cursor = document.querySelector('.custom-cursor');
     const follower = document.querySelector('.cursor-follower');
 
-    let mouseX = 0;
-    let mouseY = 0;
-    let followerX = 0;
-    let followerY = 0;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let followerX = mouseX;
+    let followerY = mouseY;
+
+    // Initialize cursor positions
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+    follower.style.left = followerX + 'px';
+    follower.style.top = followerY + 'px';
 
     document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+        mouseX = e.pageX;
+        mouseY = e.pageY;
 
         cursor.style.left = mouseX + 'px';
         cursor.style.top = mouseY + 'px';
