@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Georgia Tech x NVIDIA | Dynamic Duo Application</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,24 +13,56 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            font-family: 'Comfortaa', cursive;
+            background: #0a1628;
             color: #ffffff;
             overflow-x: hidden;
+            position: relative;
+            perspective: 1000px;
         }
 
-        .gpu-grid {
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background-color: #0a1628;
             background-image:
-                linear-gradient(rgba(118, 185, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(118, 185, 0, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 49px,
+                    rgba(180, 140, 50, 0.15) 49px,
+                    rgba(180, 140, 50, 0.15) 51px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 49px,
+                    rgba(180, 140, 50, 0.15) 49px,
+                    rgba(180, 140, 50, 0.15) 51px
+                );
             z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 70% 30%, rgba(180, 140, 50, 0.12) 0%, transparent 50%);
+            animation: subtleRotate 30s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes subtleRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .container {
@@ -38,17 +71,59 @@
             padding: 20px;
             position: relative;
             z-index: 1;
+            transform-style: preserve-3d;
+        }
+
+        .scroll-section {
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #b8934f 0%, #d4a574 50%, #b8934f 100%);
+            z-index: 10000;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 10px rgba(180, 140, 50, 0.6);
         }
 
         header {
             text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(135deg, rgba(118, 185, 0, 0.1) 0%, rgba(255, 184, 28, 0.1) 100%);
+            padding: 80px 20px 60px;
+            background: linear-gradient(135deg, rgba(180, 140, 50, 0.12) 0%, rgba(200, 160, 80, 0.08) 100%);
             border-radius: 20px;
             margin-bottom: 60px;
-            border: 2px solid rgba(118, 185, 0, 0.3);
+            border: 1px solid rgba(180, 140, 50, 0.25);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.4),
+                0 0 60px rgba(180, 140, 50, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(180, 140, 50, 0.1) 50%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.5; }
         }
 
         header::before {
@@ -58,84 +133,261 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255, 184, 28, 0.1) 0%, transparent 70%);
-            animation: pulse 4s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(180, 140, 50, 0.1) 0%, transparent 60%);
+            animation: pulse 6s ease-in-out infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.08); opacity: 0.7; }
         }
 
         h1 {
-            font-size: 3.5em;
+            font-size: 3.8em;
+            font-weight: 800;
             margin-bottom: 20px;
-            background: linear-gradient(135deg, #76b900 0%, #ffb81c 100%);
+            background: linear-gradient(135deg, #d4a574 0%, #b8934f 50%, #d4a574 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             position: relative;
             z-index: 1;
+            letter-spacing: 1px;
         }
 
         .subtitle {
-            font-size: 1.4em;
+            font-size: 1.5em;
             color: #cccccc;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             position: relative;
             z-index: 1;
+            font-weight: 400;
         }
 
         .tagline {
-            font-size: 1.1em;
-            color: #76b900;
+            font-size: 1.15em;
+            color: #b8934f;
             font-style: italic;
             position: relative;
             z-index: 1;
+            font-weight: 500;
+        }
+
+        .accent-line {
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, #b8934f 50%, transparent 100%);
+            margin: 25px auto;
         }
 
         .mission-statement {
-            background: rgba(118, 185, 0, 0.05);
-            padding: 40px;
-            border-radius: 15px;
+            background: rgba(180, 140, 50, 0.06);
+            padding: 50px;
+            border-radius: 20px;
             margin-bottom: 60px;
-            border-left: 5px solid #76b900;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #b8934f;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.6),
+                0 0 40px rgba(180, 140, 50, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: visible;
+        }
+
+        .mission-statement::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -4px;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, #d4a574, transparent);
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 10px #b8934f; }
+            50% { opacity: 1; box-shadow: 0 0 20px #d4a574; }
+        }
+
+        .gt-logo {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: rgba(180, 140, 50, 0.1);
+            border: 2px dashed rgba(180, 140, 50, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(180, 140, 50, 0.5);
+            font-size: 0.75em;
+            font-weight: 500;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .gt-logo-header {
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 90px;
+        }
+
+        .gt-logo-mission {
+            top: -35px;
+            right: 40px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .gt-logo-why-left {
+            bottom: -30px;
+            left: 50px;
+            transform: rotate(-15deg);
+        }
+
+        .gt-logo-why-right {
+            top: -30px;
+            right: 50px;
+            width: 70px;
+            height: 70px;
+        }
+
+        .gt-logo-team-left {
+            top: 20px;
+            left: -35px;
+            width: 70px;
+            height: 70px;
+            transform: rotate(15deg);
+        }
+
+        .gt-logo-team-right {
+            bottom: 20px;
+            right: -35px;
+            width: 70px;
+            height: 70px;
+            transform: rotate(-20deg);
+        }
+
+        .gt-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #b8934f;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-follower {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
+            z-index: 9998;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .cursor-follower::before {
+            content: '🐝';
+        }
+
+        body:hover .custom-cursor {
+            transform: scale(1.5);
+        }
+
+        a:hover ~ .custom-cursor,
+        button:hover ~ .custom-cursor {
+            transform: scale(2);
+            border-color: #d4a574;
         }
 
         .mission-statement h2 {
-            color: #ffb81c;
-            margin-bottom: 20px;
-            font-size: 2em;
+            background: linear-gradient(135deg, #d4a574 0%, #b8934f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            font-size: 2.2em;
+            font-weight: 800;
         }
 
         .mission-statement p {
-            line-height: 1.8;
-            font-size: 1.1em;
+            line-height: 1.9;
+            font-size: 1.15em;
             color: #e0e0e0;
+            font-weight: 400;
+        }
+
+        .team-showcase {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-bottom: 60px;
+        }
+
+        .showcase-image {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(180, 140, 50, 0.2) 0%, rgba(200, 160, 80, 0.15) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.4);
+            border: 2px dashed rgba(180, 140, 50, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .showcase-image::before {
+            content: 'Team Photo / Project Screenshot';
+            position: absolute;
+            text-align: center;
+            font-weight: 500;
         }
 
         .duo-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 40px;
+            gap: 50px;
             margin-bottom: 60px;
         }
 
         .team-member {
-            background: linear-gradient(135deg, rgba(30, 30, 30, 0.9) 0%, rgba(40, 40, 40, 0.9) 100%);
-            padding: 40px;
+            background: linear-gradient(135deg, rgba(25, 25, 25, 0.95) 0%, rgba(35, 35, 35, 0.92) 100%);
+            padding: 45px;
             border-radius: 20px;
-            border: 2px solid rgba(118, 185, 0, 0.3);
-            transition: all 0.3s ease;
+            border: 1px solid rgba(180, 140, 50, 0.25);
+            transition: all 0.4s ease;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            backdrop-filter: blur(10px);
         }
 
         .team-member:hover {
-            transform: translateY(-10px);
-            border-color: #ffb81c;
-            box-shadow: 0 20px 40px rgba(255, 184, 28, 0.3);
+            transform: translateY(-8px);
+            border-color: #b8934f;
+            box-shadow: 0 25px 50px rgba(180, 140, 50, 0.25);
         }
 
         .team-member::before {
@@ -144,64 +396,88 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #76b900 0%, #ffb81c 100%);
+            height: 4px;
+            background: linear-gradient(90deg, transparent 0%, #b8934f 50%, transparent 100%);
         }
 
         .image-placeholder {
-            width: 250px;
-            height: 250px;
-            margin: 0 auto 30px;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 35px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #76b900 0%, #ffb81c 100%);
+            background: linear-gradient(135deg, #d4a574 0%, #b8934f 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4em;
-            border: 5px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.1em;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            box-shadow:
+                0 0 0 4px rgba(180, 140, 50, 0.3),
+                0 0 0 8px rgba(180, 140, 50, 0.15),
+                0 0 0 12px rgba(180, 140, 50, 0.08),
+                0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .image-placeholder::after {
-            content: 'Upload Photo';
+            content: '';
             position: absolute;
-            bottom: 20px;
-            font-size: 0.3em;
-            color: rgba(255, 255, 255, 0.8);
+            top: -10px;
+            right: -10px;
+            width: 80px;
+            height: 80px;
+            background: #b8934f;
+            clip-path: polygon(
+                30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%
+            );
+            animation: rotate 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .team-member h3 {
-            color: #ffb81c;
-            font-size: 2em;
-            margin-bottom: 10px;
+            background: linear-gradient(135deg, #d4a574 0%, #b8934f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.1em;
+            margin-bottom: 12px;
             text-align: center;
+            font-weight: 800;
         }
 
         .role {
-            color: #76b900;
-            font-size: 1.2em;
+            color: #b8934f;
+            font-size: 1.25em;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             font-weight: 600;
         }
 
         .bio-section {
-            margin-bottom: 25px;
+            margin-bottom: 28px;
         }
 
         .bio-section h4 {
-            color: #ffb81c;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-            border-bottom: 2px solid rgba(118, 185, 0, 0.3);
-            padding-bottom: 5px;
+            color: #d4a574;
+            margin-bottom: 12px;
+            font-size: 1.25em;
+            border-bottom: 1px solid rgba(180, 140, 50, 0.25);
+            padding-bottom: 8px;
+            font-weight: 600;
         }
 
         .bio-section p, .bio-section ul {
             color: #d0d0d0;
-            line-height: 1.7;
+            line-height: 1.8;
             font-size: 1.05em;
+            font-weight: 400;
         }
 
         .bio-section ul {
@@ -210,130 +486,200 @@
         }
 
         .bio-section li {
-            padding: 8px 0;
-            padding-left: 25px;
+            padding: 10px 0;
+            padding-left: 28px;
             position: relative;
         }
 
         .bio-section li::before {
-            content: '▸';
-            color: #76b900;
+            content: '';
             position: absolute;
             left: 0;
-            font-weight: bold;
+            top: 18px;
+            width: 8px;
+            height: 8px;
+            background: #b8934f;
+            border-radius: 50%;
         }
 
         .tech-stack {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 12px;
         }
 
         .tech-badge {
-            background: rgba(118, 185, 0, 0.2);
-            color: #76b900;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            border: 1px solid rgba(118, 185, 0, 0.4);
+            background: rgba(180, 140, 50, 0.15);
+            color: #d4a574;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 0.95em;
+            border: 1px solid rgba(180, 140, 50, 0.3);
+            font-weight: 500;
+        }
+
+        .project-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .gallery-item {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(180, 140, 50, 0.15) 0%, rgba(200, 160, 80, 0.1) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(180, 140, 50, 0.25);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+            border-color: #b8934f;
         }
 
         .why-nvidia {
-            background: linear-gradient(135deg, rgba(255, 184, 28, 0.1) 0%, rgba(118, 185, 0, 0.1) 100%);
-            padding: 50px;
+            background: linear-gradient(135deg, rgba(180, 140, 50, 0.1) 0%, rgba(200, 160, 80, 0.06) 100%);
+            padding: 60px;
             border-radius: 20px;
             margin-bottom: 60px;
-            border: 2px solid rgba(255, 184, 28, 0.3);
+            border: 1px solid rgba(180, 140, 50, 0.25);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: visible;
+            box-shadow:
+                0 15px 50px rgba(0, 0, 0, 0.5),
+                0 0 50px rgba(180, 140, 50, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
         .why-nvidia h2 {
-            color: #ffb81c;
-            font-size: 2.5em;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #d4a574 0%, #b8934f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.6em;
+            margin-bottom: 40px;
             text-align: center;
+            font-weight: 800;
         }
 
         .enthusiasm-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+            margin-top: 40px;
         }
 
         .enthusiasm-card {
-            background: rgba(30, 30, 30, 0.6);
-            padding: 25px;
+            background: rgba(25, 25, 25, 0.7);
+            padding: 30px;
             border-radius: 15px;
-            border-left: 4px solid #76b900;
+            border-left: 3px solid #b8934f;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .enthusiasm-card:hover {
+            transform: translateX(5px);
+            background: rgba(30, 30, 30, 0.8);
         }
 
         .enthusiasm-card h3 {
-            color: #ffb81c;
-            margin-bottom: 15px;
-            font-size: 1.3em;
+            color: #d4a574;
+            margin-bottom: 18px;
+            font-size: 1.4em;
+            font-weight: 600;
         }
 
         .enthusiasm-card p {
             color: #d0d0d0;
-            line-height: 1.7;
+            line-height: 1.8;
+            font-weight: 400;
         }
 
         footer {
             text-align: center;
-            padding: 40px;
-            background: rgba(20, 20, 20, 0.8);
-            border-radius: 15px;
-            border: 1px solid rgba(118, 185, 0, 0.2);
+            padding: 50px;
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 20px;
+            border: 1px solid rgba(180, 140, 50, 0.2);
+            backdrop-filter: blur(10px);
         }
 
         footer p {
             color: #999999;
             font-size: 1.1em;
+            margin-bottom: 12px;
+            font-weight: 400;
         }
 
-        .nvidia-green { color: #76b900; }
-        .gt-gold { color: #ffb81c; }
+        footer a {
+            color: #b8934f;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
 
-        .accent-line {
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, #76b900 0%, #ffb81c 100%);
-            margin: 20px auto;
+        footer a:hover {
+            color: #d4a574;
+        }
+
+        .highlight {
+            color: #b8934f;
+            font-weight: 600;
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 2.5em; }
+            h1 { font-size: 2.8em; }
             .duo-container { grid-template-columns: 1fr; }
             .enthusiasm-grid { grid-template-columns: 1fr; }
+            .team-showcase { grid-template-columns: 1fr; }
+            .project-gallery { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-<div class="gpu-grid"></div>
+<div class="progress-bar"></div>
+<div class="custom-cursor"></div>
+<div class="cursor-follower"></div>
 <div class="container">
-    <header>
-        <h1>⚡ Georgia Tech x NVIDIA ⚡</h1>
+    <header class="scroll-section">
+        <div class="gt-logo gt-logo-header">GT Image</div>
+        <h1>Georgia Tech x NVIDIA</h1>
         <div class="accent-line"></div>
         <p class="subtitle">Enterprise Product Group Internship Application</p>
         <p class="tagline">Two Yellow Jackets, One Mission: Accelerating AI Innovation</p>
     </header>
 
-    <section class="mission-statement">
-        <h2>🚀 Our Duo Mission</h2>
+    <section class="team-showcase scroll-section">
+        <div class="showcase-image"></div>
+        <div class="showcase-image"></div>
+    </section>
+
+    <section class="mission-statement scroll-section">
+        <div class="gt-logo gt-logo-mission">GT Image</div>
+        <h2>Our Duo Mission</h2>
         <p>
             We're a dynamic duo from Georgia Tech, united by our passion for AI infrastructure and product development.
             Inspired by NVIDIA's call for collaborative partnerships, we've combined our complementary skills in
-            <span class="nvidia-green">distributed systems, AI tooling, and product strategy</span> to bring fresh perspectives
-            to the Enterprise Product Group. Together, we're ready to <span class="gt-gold">default to action</span>,
+            <span class="highlight">distributed systems, AI tooling, and product strategy</span> to bring fresh perspectives
+            to the Enterprise Product Group. Together, we're ready to <span class="highlight">default to action</span>,
             drive OSS contributions, and help shape the future of DGX systems and enterprise AI platforms.
         </p>
     </section>
 
-    <div class="duo-container">
-        <!-- Team Member 1 -->
+    <div class="duo-container scroll-section">
         <div class="team-member">
-            <div class="image-placeholder">👤</div>
+            <div class="gt-logo gt-logo-team-left">GT Image</div>
+            <div class="image-placeholder">Upload Your Photo</div>
             <h3>[Your Name Here]</h3>
             <p class="role">GPU Architect & Backend Specialist</p>
 
@@ -375,9 +721,9 @@
             </div>
         </div>
 
-        <!-- Team Member 2 -->
         <div class="team-member">
-            <div class="image-placeholder">👤</div>
+            <div class="gt-logo gt-logo-team-right">GT Image</div>
+            <div class="image-placeholder">Upload Your Photo</div>
             <h3>[Partner's Name Here]</h3>
             <p class="role">Product Strategist & AI Integration Expert</p>
 
@@ -420,11 +766,19 @@
         </div>
     </div>
 
-    <section class="why-nvidia">
-        <h2>🎯 Why We're the Perfect Duo for NVIDIA</h2>
+    <section class="project-gallery scroll-section">
+        <div class="gallery-item">Project Screenshot 1</div>
+        <div class="gallery-item">Project Screenshot 2</div>
+        <div class="gallery-item">Project Screenshot 3</div>
+    </section>
+
+    <section class="why-nvidia scroll-section">
+        <div class="gt-logo gt-logo-why-left">GT Image</div>
+        <div class="gt-logo gt-logo-why-right">GT Image</div>
+        <h2>Why We're the Perfect Duo for NVIDIA</h2>
         <div class="enthusiasm-grid">
             <div class="enthusiasm-card">
-                <h3>💪 Complementary Skills</h3>
+                <h3>Complementary Skills</h3>
                 <p>
                     Our partnership combines deep technical expertise in distributed systems and AI with
                     strategic product thinking. We cover the full spectrum from writing code to fix product
@@ -432,7 +786,7 @@
                 </p>
             </div>
             <div class="enthusiasm-card">
-                <h3>🚀 Default to Action</h3>
+                <h3>Default to Action</h3>
                 <p>
                     We don't just identify problems—we solve them. Both experienced with AI-assisted coding
                     tools like Cursor and Claude Code, we're ready to prototype solutions, contribute to OSS,
@@ -440,7 +794,7 @@
                 </p>
             </div>
             <div class="enthusiasm-card">
-                <h3>🌟 Genuine Excitement</h3>
+                <h3>Genuine Excitement</h3>
                 <p>
                     From following DGX SuperPOD deployments to experimenting with NVIDIA's AI frameworks,
                     we're genuinely excited about the software we'll be building. We see this internship
@@ -448,7 +802,7 @@
                 </p>
             </div>
             <div class="enthusiasm-card">
-                <h3>🐝 Georgia Tech Innovation</h3>
+                <h3>Georgia Tech Innovation</h3>
                 <p>
                     As Yellow Jackets, we bring the collaborative spirit and technical rigor of Georgia Tech.
                     Our campus culture emphasizes hands-on building, cross-functional teamwork, and pushing
@@ -458,13 +812,95 @@
         </div>
     </section>
 
-    <footer>
-        <p>Built with 💚 by two Georgia Tech students ready to accelerate AI at NVIDIA</p>
-        <p class="nvidia-green">Contact: [your-emails@gatech.edu]</p>
-        <p style="margin-top: 10px; font-size: 0.9em;">
-            🎨 Vibe-coded with AI-assisted tools | 🐙 View on <a href="#" style="color: #76b900;">GitHub</a>
+    <footer class="scroll-section">
+        <p>Built by two Georgia Tech students ready to accelerate AI at NVIDIA</p>
+        <p class="highlight">Contact: [your-emails@gatech.edu]</p>
+        <p style="margin-top: 15px; font-size: 0.95em;">
+            Vibe-coded with AI-assisted tools | View on <a href="#">GitHub</a>
         </p>
     </footer>
 </div>
+
+<script>
+    // Progress bar
+    const progressBar = document.querySelector('.progress-bar');
+
+    function updateProgressBar() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = (scrollTop / docHeight) * 100;
+        progressBar.style.width = scrollPercent + '%';
+    }
+
+    window.addEventListener('scroll', updateProgressBar);
+    updateProgressBar(); // Initial call
+
+    // Custom cursor
+    const cursor = document.querySelector('.custom-cursor');
+    const follower = document.querySelector('.cursor-follower');
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let followerX = 0;
+    let followerY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+    });
+
+    function animateFollower() {
+        const distX = mouseX - followerX;
+        const distY = mouseY - followerY;
+
+        followerX += distX * 0.1;
+        followerY += distY * 0.1;
+
+        follower.style.left = followerX + 'px';
+        follower.style.top = followerY + 'px';
+
+        requestAnimationFrame(animateFollower);
+    }
+
+    animateFollower();
+
+    // 3D scroll effect
+    const scrollSections = document.querySelectorAll('.scroll-section');
+
+    function handleScroll() {
+        const scrollPos = window.scrollY;
+        const windowHeight = window.innerHeight;
+
+        scrollSections.forEach((section, index) => {
+            const rect = section.getBoundingClientRect();
+            const sectionTop = rect.top;
+            const sectionHeight = rect.height;
+            const sectionCenter = sectionTop + sectionHeight / 2;
+
+            // Calculate how far the section is from the center of viewport
+            const distanceFromCenter = (windowHeight / 2 - sectionCenter) / windowHeight;
+
+            // Apply subtle 3D rotation based on scroll position
+            const rotateX = distanceFromCenter * 3; // Reduced from 8 to 3 degrees
+            const scale = 1 - Math.abs(distanceFromCenter) * 0.02; // Reduced from 0.05 to 0.02
+            const opacity = 1 - Math.abs(distanceFromCenter) * 0.1; // Reduced from 0.3 to 0.1
+
+            // Only apply transforms when section is near viewport
+            if (sectionTop < windowHeight && sectionTop > -sectionHeight) {
+                section.style.transform = `perspective(1000px) rotateX(${rotateX}deg) scale(${scale})`;
+                section.style.opacity = Math.max(opacity, 0.9); // Increased from 0.7 to 0.9
+            } else {
+                section.style.transform = 'none';
+                section.style.opacity = '1';
+            }
+        });
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial call
+</script>
 </body>
 </html>
